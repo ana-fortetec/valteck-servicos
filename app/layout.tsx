@@ -6,6 +6,7 @@ import "./globals.css";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import { ClientProviders } from "./providers";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Navigation />
           {children}
           <Footer />
+          <WhatsAppButton />
           <Analytics />
         </ClientProviders>
       </body>

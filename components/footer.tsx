@@ -3,14 +3,16 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import Image from "next/image";
 
 export default function Footer() {
+  const whatsappNumber = "559991320172";
+  const whatsappNumberFormatted = "(99) 9132-0172";
+
   return (
     <footer className="bg-primary-black text-white py-12">
       <div className="max-w-7xl mx-auto px-8 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
-          {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-12 h-10  rounded-lg flex items-center justify-center">
+              <div className="w-12 h-10 rounded-lg flex items-center justify-center">
                 <Image
                   src="/logo-valteck.png"
                   alt="Valteck Serviços"
@@ -18,9 +20,6 @@ export default function Footer() {
                   height={40}
                   className="w-12 h-10"
                 />
-                <span className="font-bold text-lg text-gray-900 hidden sm:inline">
-                  Valteck
-                </span>
               </div>
               <span className="font-bold text-lg">Valteck</span>
             </div>
@@ -29,7 +28,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h4 className="font-bold mb-4 text-primary-yellow">
               Links Rápidos
@@ -70,7 +68,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Services */}
           <div>
             <h4 className="font-bold mb-4 text-primary-blue">Serviços</h4>
             <ul className="space-y-2 text-sm text-gray-400">
@@ -83,13 +80,19 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h4 className="font-bold mb-4 text-primary-red">Contato</h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-center gap-2">
                 <Phone size={16} />
-                (11) 9999-9999
+                <a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary-yellow transition-colors"
+                >
+                  {whatsappNumberFormatted}
+                </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={16} />
@@ -103,7 +106,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
             <p>&copy; 2025 Valteck Serviços. Todos os direitos reservados.</p>

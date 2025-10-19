@@ -2,7 +2,9 @@
 
 import type React from "react";
 
-import { Mail, Phone, MapPin, Send, Check } from "lucide-react";
+import { Mail, Phone, MapPin, Check } from "lucide-react";
+import { RiLoader4Fill, RiWhatsappLine } from "react-icons/ri";
+
 import {
   Form,
   FormControl,
@@ -21,7 +23,6 @@ import z from "zod";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { RiLoader4Fill } from "react-icons/ri";
 import { Checkbox } from "./ui/checkbox";
 
 interface IContactForm {
@@ -35,6 +36,9 @@ export default function ContactForm({
   onSubmit,
   statusRequest,
 }: IContactForm) {
+  const whatsappNumber = "559991320172";
+  const whatsappNumberFormatted = "(99) 9132-0172";
+
   const form = useForm<z.infer<typeof sendEmailSchema>>({
     resolver: zodResolver(sendEmailSchema),
     defaultValues: {
@@ -56,9 +60,30 @@ export default function ContactForm({
   }
 
   const handleFormSubmit = (data: SendEmailSchemaType) => {
-    // Esta linha só será executada se a validação for bem-sucedida
-    console.log("Validação OK! Enviando dados:", data);
+    console.log("Validação OK! Enviando dados para o email:", data);
     onSubmit(data);
+  };
+
+  const handleWhatsAppRedirect = () => {
+    const { name, service, message } = form.getValues();
+
+    let whatsappMessage = `Olá! Meu nome é ${name || "Cliente"}.`;
+
+    if (service && service.length > 0) {
+      whatsappMessage += `\n\nGostaria de um orçamento para o(s) serviço(s) de: ${service.join(
+        ", "
+      )}.`;
+    }
+
+    if (message) {
+      whatsappMessage += `\n\nMensagem: ${message}`;
+    }
+
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, "_blank");
   };
 
   return (
@@ -74,7 +99,6 @@ export default function ContactForm({
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Contact Info */}
           <div className="space-y-8">
             <div className="flex gap-4">
               <div className="p-4 bg-primary-yellow rounded-lg text-primary-black flex-shrink-0">
@@ -82,10 +106,16 @@ export default function ContactForm({
               </div>
               <div>
                 <h3 className="text-xl font-bold text-primary-black mb-1">
-                  Telefone
+                  Telefone / WhatsApp
                 </h3>
-                <p className="text-gray-600">(11) 9999-9999</p>
-                <p className="text-gray-600">(11) 3333-3333</p>
+                <a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-primary-blue transition-colors"
+                >
+                  {whatsappNumberFormatted}
+                </a>
               </div>
             </div>
 
@@ -170,11 +200,11 @@ export default function ContactForm({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Telefone</FormLabel>
+                    <FormLabel>Telefone (Opcional)</FormLabel>
                     <FormControl>
                       <Input
                         className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="name@email.com"
+                        placeholder="(99) 99999-9999"
                         {...field}
                       />
                     </FormControl>
@@ -186,29 +216,40 @@ export default function ContactForm({
               <FormField
                 control={form.control}
                 name="service"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Selecione seu serviço</FormLabel>
-                    <div className="flex flex-col lg:flex-row gap-2 lg:justify-start w-full lg:items-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                       {Object.values(ListService).map((servico) => (
-                        <div key={servico} className="flex items-center gap-2">
-                          <FormControl>
-                            <Checkbox
-                              className="text-xs"
-                              checked={field.value.includes(servico)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...field.value, servico]);
-                                } else {
-                                  field.onChange(
-                                    field.value.filter((s) => s !== servico)
-                                  );
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel>{servico}</FormLabel>
-                        </div>
+                        <FormField
+                          key={servico}
+                          control={form.control}
+                          name="service"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value.includes(servico)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          servico,
+                                        ])
+                                      : field.onChange(
+                                          field.value.filter(
+                                            (value) => value !== servico
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                {servico}
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
                       ))}
                     </div>
                     <FormMessage />
@@ -234,23 +275,33 @@ export default function ContactForm({
                 )}
               />
 
-              <Button
-                type="submit"
-                onClick={() => console.log("O BOTÃO FOI CLICADO!")}
-                disabled={isLoading}
-                className="bg-primary w-40 hover:bg-blue-600 text-white"
-              >
-                {isLoading ? (
-                  <>
-                    <RiLoader4Fill className="h-6 w-6 animate-spin" /> Enviando
-                  </>
-                ) : (
-                  <>
-                    <Check className="text-success" size={16} />
-                    {"Enviar"}
-                  </>
-                )}
-              </Button>
+              {/* GRUPO DE BOTÕES */}
+              <div className="flex flex-wrap items-center gap-4">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-primary hover:bg-blue-600 text-white flex-grow sm:flex-grow-0"
+                >
+                  {isLoading ? (
+                    <>
+                      <RiLoader4Fill className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Enviando...
+                    </>
+                  ) : (
+                    <>Enviar por Email</>
+                  )}
+                </Button>
+
+                {/* NOVO BOTÃO PARA WHATSAPP */}
+                <Button
+                  type="button" // Importante: type="button" para não submeter o formulário
+                  onClick={handleWhatsAppRedirect}
+                  className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 flex-grow sm:flex-grow-0"
+                >
+                  <RiWhatsappLine className="h-5 w-5" />
+                  Enviar por WhatsApp
+                </Button>
+              </div>
             </form>
           </Form>
         </div>
