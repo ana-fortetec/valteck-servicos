@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white pt-20 pb-32">
       {/* Decorative elements */}
-      <div className="absolute top-10 right-10 w-72 h-72 bg-primary-yellow opacity-5 rounded-full blur-3xl"></div>
+      <div className="absolute top-10 md:right-10 w-72 h-72 bg-primary-yellow opacity-5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-10 w-96 h-96 bg-primary-blue opacity-5 rounded-full blur-3xl"></div>
 
       <div className="max-w-7xl mx-auto px-8 sm:px-6 lg:px-8 relative z-10">
